@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "mixer.h": "c",
+        "string.h": "c"
+    }
+}

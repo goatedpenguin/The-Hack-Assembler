@@ -100,7 +100,26 @@ char* extractDest(char* line) {
 }
 
 char* extractComp(char* line) {
+    char registers[3] = {'A', 'D', 'M'};
+    char* comp = (char *) malloc(3*sizeof(char));
+    int start = -1, end = -1, i = 0;
+
+    while(line[i]) {
+        if (line[i] == '=') {
+            start = i;
+        }
+        if (line[i] == ';') {
+            end = i;
+        }
+    }
+
+    if (start == -1 && end == -1) {
+        strcpy(comp, line);
+        
+    }
     
+    return line;
+
 }
 
 char* extractJump(char* line) {

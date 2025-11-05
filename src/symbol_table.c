@@ -44,22 +44,34 @@ unsigned long hash(const char* str) {
     return hash;
 }
 
-void addSym(symTable* table, const char* name, int address) {
+void resize(symTable* table) {
     int newIdx;
-    if (table->size >= (int) (2.0 / 3 * table->capacity)) {
-        // rehash everything here
-        for (int i = 0; i < table->capacity; i++) {
-            newIdx = hash(table->entries[i]->name);
-            if (table->entries[newIdx] != NULL) {
-                // transfer whole chain to new index and check if that has anything
-            } else {
-                table->entries[newIdx] = table->entries[i];
-            }
-        }
+    int oldCapacity = table->capacity;
+    entry* temp;
+    entry* next;
+    if (table->size * 3 >= 2 * table->capacity) {
         table->entries = (entry**) realloc(table->entries, table->capacity * 2 * sizeof(entry*));
         table->capacity = (int) table->capacity * 2;
-    }
 
+        for (int i = oldCapacity; i < table->capacity; i++) {
+            table->entries[i] = NULL;
+        }
+
+        for (int i = 0; i < oldCapacity; i++) {
+            temp = table->entries[i];
+            while (temp != NULL) {
+                newIdx = hash(temp->name) % table->capacity;
+                next = temp->next;
+                temp->next = table->entries[newIdx];
+                table->entries[newIdx] = temp;
+            temp = next;
+            }    
+        }
+    }
+}
+
+void addSym(symTable* table, const char* name, int address) {
+    resize(table);
     int idx = hash(name) % table->capacity;
 
     entry* temp = (entry *) malloc(sizeof(entry));

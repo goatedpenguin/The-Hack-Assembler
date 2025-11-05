@@ -16,6 +16,7 @@ typedef struct {
 symTable* initTable(void);
 void freeTable(symTable* table);
 unsigned long hash(const char* str);
+static void resize(symTable* table);
 void addSym(symTable* table, const char* name, int address);
 int getSym(symTable* table, const char* name);
 

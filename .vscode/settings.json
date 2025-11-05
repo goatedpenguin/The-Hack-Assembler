@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "mixer.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "parser.h": "c"
     }
 }

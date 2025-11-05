@@ -8,7 +8,7 @@ static void stripWhiteSpace(char* line) {
     int i = 0;
     int len;
     len = strlen(line) + 1;
-    while (line[i] != '\0') {
+    while(line[i] != '\0') {
         if (line[i] == ' ') {
             len--;
             for (int j = i; j < len; j++) {
@@ -22,7 +22,7 @@ static void stripWhiteSpace(char* line) {
 
 static void stripComments(char* line) {
     int i = 0;
-    while (line[i] != '\0') {
+    while(line[i] != '\0') {
         if (line[i] == '/') {
             line[i] = '\0';
             break;
@@ -31,12 +31,12 @@ static void stripComments(char* line) {
     }
 }
 
-void santizeLine(char* line) {
+void sanitizeLine(char* line) {
     stripComments(line);
     stripWhiteSpace(line);
 }
 
-instrType detectInstrType(const char* line) {
+static instrType detectInstrType(const char* line) {
     instrType type;
     
     if (line[0] == '@') {
@@ -50,18 +50,18 @@ instrType detectInstrType(const char* line) {
     return C_INSTR;
 }
 
-char* extractSym(const char* line) {
+static char* extractSym(const char* line) {
     instrType type = detectInstrType(line);
     int len = strlen(line);
     char* sym = (char *) malloc(len);
     switch (type) {
-        case 0:
-            for (int i = 0; i < len; i++) {
+        case A_INSTR:
+            for(int i = 0; i < len; i++) {
                 sym[i] = line[i + 1];
             }
             break;   
-        case 2:
-            for (int i = 0; i < len; i++) {
+        case L_INSTR:
+            for(int i = 0; i < len; i++) {
                 sym[i] = line[i + 1];
                 if (line[i + 1] == ')') {
                     sym[i] = '\0'; 
@@ -73,12 +73,12 @@ char* extractSym(const char* line) {
     return sym;
 }
 
-char* extractDest(char* line) {
+static char* extractDest(char* line) {
     int i = 0;
     int containsEqual = 0;
     char* res = malloc(8*sizeof(char));
 
-    while (line[i] != '\0') {
+    while(line[i] != '\0') {
         if (line[i] == '=') {
             containsEqual = 1;
             break;
@@ -99,35 +99,53 @@ char* extractDest(char* line) {
     return res;
 }
 
-char* extractComp(char* line) {
-    char registers[3] = {'A', 'D', 'M'};
-    char* comp = (char *) malloc(3*sizeof(char));
+static char* extractComp(char* line) {
+    char* comp = (char *) malloc(strlen(line)*sizeof(char) + 1);
     int start = -1, end = -1, i = 0;
+    int tempIdx = 0;
 
     while(line[i]) {
         if (line[i] == '=') {
-            start = i;
+            start = i + 1;
         }
         if (line[i] == ';') {
             end = i;
         }
+        i++;
     }
 
     if (start == -1 && end == -1) {
         strcpy(comp, line);
-        
+    } else if (start != -1 && end == -1) {
+        for(int i = start; i < strlen(line); i++) {
+            comp[tempIdx] = line[i];
+            tempIdx++;
+        }
+        comp[tempIdx] = '\0';
+    } else if (start == -1 && end != -1) {
+        for(int i = 0; i < end; i++) {
+            comp[tempIdx] = line[i];
+            tempIdx++;
+        }
+        comp[tempIdx] = '\0';
     }
-    
-    return line;
+    else {
+        for(int i = start; i < end; i++) {
+            comp[tempIdx] = line[i];
+            tempIdx++;
+        }
+        comp[tempIdx] = '\0';
+    }
 
+    return comp;
 }
 
-char* extractJump(char* line) {
+static char* extractJump(char* line) {
     int i = 0;
     int containsSemicolon = 0;
     char* res = malloc(8*sizeof(char));
 
-    while (line[i] != '\0') {
+    while(line[i] != '\0') {
         if (line[i] == ';') {
             containsSemicolon = 1;
             break;
@@ -141,7 +159,7 @@ char* extractJump(char* line) {
 
     int idx = 0;
     int j = i + 1;
-    while (line[j] != '\0') {
+    while(line[j] != '\0') {
         res[idx++] = line[j++];
     }
 

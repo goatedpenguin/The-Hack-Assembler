@@ -1,3 +1,43 @@
-*.plist
-*.dYSM/*
+// ...existing code...
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+__MACOSX/
+*.DS_Store
 
+# Xcode / debug symbol bundles
+*.dSYM/
+
+# Property lists
+*.plist
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*~
+# Vim swap/temp
+*.swp
+.*.swp
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Node / JS
+node_modules/
+
+# Build artifacts
+build/
+dist/
+*.o
+*.so
+*.exe
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.json

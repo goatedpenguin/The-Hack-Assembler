@@ -19,13 +19,15 @@ typedef struct parsedPacket {
 
 static void stripComments(char* line);
 static void stripWhiteSpace(char* line);
-void santizeLine(char* line);
+void sanitizeLine(char* line);
 
-instrType detectInstrType(const char* line);
+static instrType detectInstrType(const char* line);
 
-char* extractSym(const char* line);
-char* extractDest(char* line);
-char* extractComp(char* line);
-char* extractJump(char* line);
+static char* extractSym(const char* line);
+static char* extractDest(char* line);
+static char* extractComp(char* line);
+static char* extractJump(char* line);
+
+ParsedPacket buildPacket(symTable* table, const char* line)
 
 #endif

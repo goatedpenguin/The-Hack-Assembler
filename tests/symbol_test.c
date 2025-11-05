@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
-#include "symbol_table.h"
+#include "../src/symbol_table.h"
 
 int main(void) {
     printf("=== Symbol Table Test Start ===\n");

@@ -1,26 +1,32 @@
+#ifndef ASSEMBLER_H
+#define ASSEMBLER_H
 
-#ifndef ASSEMBLER
-#define ASSEMBLER
+#include "codegen.h"
 #include "parser.h"
 #include "symbol_table.h"
+#include <stdio.h>
 
+void loadPredefinedSymbols(symTable* table);
+void assemblerFirstPass(symTable* table);
+void assemblerSecondPass(const char* programExecutableName, symTable* table);
 
-// load file
-// santize it
-// populate default symbols in a seperte table and make it const
-// init symbol table
-// fill symbol table with all the labels
-// close the file
-// ram addr assignment starts from addr 16 and above (0-15)
+/*
+This function:
 
-// code gen then fetches the instr packets and looks up stuff from the symbol table if its an instruction
-    // if a is a label then we put in the addr for that to binary
-    // if a is a variable(symbolic(letters)) then we put it in the next available ram slot
-    // if a is a number directly convert to binary
+Parses the syntax.
 
-void phase1(symTable* table, const char* filename);
-void phase2(symTable* table, const char* filename);
+Resolves symbols in A-instructions:
 
+If it’s a numeric constant, store it as-is.
+
+If it’s a symbol:
+
+If it exists in symTable, fetch its address.
+
+If not, assign it the next available RAM address (starting at 16) and store it.
+
+Fills out the ParsedPacket.
+*/
+ParsedPacket* fetchInstrPacket(symTable* table, const char* line);
 
 #endif
-

@@ -1,14 +1,15 @@
+#include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "parser.h"
 
+// extern symTable* numericTableChecker;
 
 static void stripWhiteSpace(char* line) {
     int i = 0;
     int len;
     len = strlen(line) + 1;
-    while(line[i] != '\0') {
+    while (line[i] != '\0') {
         if (line[i] == ' ') {
             len--;
             for (int j = i; j < len; j++) {
@@ -22,7 +23,7 @@ static void stripWhiteSpace(char* line) {
 
 static void stripComments(char* line) {
     int i = 0;
-    while(line[i] != '\0') {
+    while (line[i] != '\0') {
         if (line[i] == '/') {
             line[i] = '\0';
             break;
@@ -38,7 +39,7 @@ void sanitizeLine(char* line) {
 
 static instrType detectInstrType(const char* line) {
     instrType type;
-    
+
     if (line[0] == '@') {
         return A_INSTR;
     }
@@ -53,32 +54,32 @@ static instrType detectInstrType(const char* line) {
 static char* extractSym(const char* line) {
     instrType type = detectInstrType(line);
     int len = strlen(line);
-    char* sym = (char *) malloc(len);
+    char* sym = (char*)malloc(len);
     switch (type) {
-        case A_INSTR:
-            for(int i = 0; i < len; i++) {
-                sym[i] = line[i + 1];
+    case A_INSTR:
+        for (int i = 0; i < len; i++) {
+            sym[i] = line[i + 1];
+        }
+        break;
+    case L_INSTR:
+        for (int i = 0; i < len; i++) {
+            sym[i] = line[i + 1];
+            if (line[i + 1] == ')') {
+                sym[i] = '\0';
+                break;
             }
-            break;   
-        case L_INSTR:
-            for(int i = 0; i < len; i++) {
-                sym[i] = line[i + 1];
-                if (line[i + 1] == ')') {
-                    sym[i] = '\0'; 
-                    break;
-                }
-            }
-            break;
+        }
+        break;
     }
     return sym;
 }
 
-static char* extractDest(char* line) {
+static char* extractDest(const char* line) {
     int i = 0;
     int containsEqual = 0;
-    char* res = malloc(8*sizeof(char));
+    char* res = malloc(8 * sizeof(char));
 
-    while(line[i] != '\0') {
+    while (line[i] != '\0') {
         if (line[i] == '=') {
             containsEqual = 1;
             break;
@@ -99,12 +100,12 @@ static char* extractDest(char* line) {
     return res;
 }
 
-static char* extractComp(char* line) {
-    char* comp = (char *) malloc(strlen(line)*sizeof(char) + 1);
+static char* extractComp(const char* line) {
+    char* comp = (char*)malloc(strlen(line) * sizeof(char) + 1);
     int start = -1, end = -1, i = 0;
     int tempIdx = 0;
 
-    while(line[i]) {
+    while (line[i]) {
         if (line[i] == '=') {
             start = i + 1;
         }
@@ -117,20 +118,19 @@ static char* extractComp(char* line) {
     if (start == -1 && end == -1) {
         strcpy(comp, line);
     } else if (start != -1 && end == -1) {
-        for(int i = start; i < strlen(line); i++) {
+        for (int i = start; i < strlen(line); i++) {
             comp[tempIdx] = line[i];
             tempIdx++;
         }
         comp[tempIdx] = '\0';
     } else if (start == -1 && end != -1) {
-        for(int i = 0; i < end; i++) {
+        for (int i = 0; i < end; i++) {
             comp[tempIdx] = line[i];
             tempIdx++;
         }
         comp[tempIdx] = '\0';
-    }
-    else {
-        for(int i = start; i < end; i++) {
+    } else {
+        for (int i = start; i < end; i++) {
             comp[tempIdx] = line[i];
             tempIdx++;
         }
@@ -140,12 +140,12 @@ static char* extractComp(char* line) {
     return comp;
 }
 
-static char* extractJump(char* line) {
+static char* extractJump(const char* line) {
     int i = 0;
     int containsSemicolon = 0;
-    char* res = malloc(8*sizeof(char));
+    char* res = malloc(8 * sizeof(char));
 
-    while(line[i] != '\0') {
+    while (line[i] != '\0') {
         if (line[i] == ';') {
             containsSemicolon = 1;
             break;
@@ -159,7 +159,7 @@ static char* extractJump(char* line) {
 
     int idx = 0;
     int j = i + 1;
-    while(line[j] != '\0') {
+    while (line[j] != '\0') {
         res[idx++] = line[j++];
     }
 
@@ -167,3 +167,48 @@ static char* extractJump(char* line) {
     return res;
 }
 
+ParsedPacket* parseCInstruction(const char* line) {
+    ParsedPacket* packet = (ParsedPacket*)malloc(sizeof(ParsedPacket));
+
+    packet->comp = extractComp(line);
+    packet->dest = extractDest(line);
+    packet->jump = extractJump(line);
+
+    return packet;
+}
+
+ParsedPacket* parseAInstruction(symTable* table, const char* line) {
+    static int nextFreeRamAddr = 16;
+
+    // check if it overflows to screen memory region
+    if (nextFreeRamAddr > 16383)
+        return NULL;
+
+    ParsedPacket* packet = (ParsedPacket*)malloc(sizeof(ParsedPacket));
+    // detect if binded to a label, var, or numeric
+
+    char* symbol = extractSym(line);
+    int retval = getSym(table, symbol);
+
+    // label processing
+    if (retval != -1) {
+        packet->value = retval;
+        return packet;
+    }
+
+    // else, check the string to see whether its numeric or a var e.x. "5" vs
+    // "i" check numeric first if not, then it must be a var:
+
+    if (symbol[0] >= '0' && symbol[0] <= '9') {
+        int val = atoi(symbol);
+        packet->value = val;
+
+        // bit vector collision and resolve logic goes here
+        
+        return packet;
+    } else {
+        packet->value = nextFreeRamAddr;
+        nextFreeRamAddr++;
+        return packet;
+    }
+}

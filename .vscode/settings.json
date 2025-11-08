@@ -1,7 +1,18 @@
 {
+    // File associations for C headers
     "files.associations": {
         "mixer.h": "c",
         "string.h": "c",
-        "parser.h": "c"
-    }
+        "parser.h": "c",
+        "stdio.h": "c",
+        "symbol_table.h": "c",
+        "stdlib.h": "c",
+        "stdint.h": "c",
+        "codegen.h": "c",
+        "assembler.h": "c"
+    },
+    // Use project .clang-format file for coding style
+    "C_Cpp.clang_format_style": "file",
+    // Format automatically on save
+    "editor.formatOnSave": true
 }

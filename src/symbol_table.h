@@ -21,4 +21,3 @@ void addSym(symTable* table, const char* name, int address);
 int getSym(symTable* table, const char* name);
 
 #endif
-

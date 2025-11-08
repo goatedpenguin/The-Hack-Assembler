@@ -1,20 +1,17 @@
 #ifndef PARSER
 #define PARSER
+#include "symbol_table.h"
+#include <stdint.h>
 #include <stdio.h>
 
-typedef enum {
-    A_INSTR,
-    C_INSTR,
-    L_INSTR
-} instrType;
+typedef enum { A_INSTR, C_INSTR, L_INSTR } instrType;
 
 typedef struct parsedPacket {
-    instrType type;
+    uint16_t value;
     char* symbol;
-    int aBit;
-    char comp[8];
-    char dest[8];
-    char jump[8];
+    char* comp;
+    char* dest;
+    char* jump;
 } ParsedPacket;
 
 static void stripComments(char* line);
@@ -24,10 +21,11 @@ void sanitizeLine(char* line);
 static instrType detectInstrType(const char* line);
 
 static char* extractSym(const char* line);
-static char* extractDest(char* line);
-static char* extractComp(char* line);
-static char* extractJump(char* line);
+static char* extractDest(const char* line);
+static char* extractComp(const char* line);
+static char* extractJump(const char* line);
 
-ParsedPacket buildPacket(symTable* table, const char* line)
+ParsedPacket* parseCInstruction(const char* line);
+ParsedPacket* parseAInstruction(symTable* table, const char* line);
 
 #endif

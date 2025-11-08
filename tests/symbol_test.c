@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <assert.h>
 #include "../src/symbol_table.h"
+#include <assert.h>
+#include <stdio.h>
 
 int main(void) {
     printf("=== Symbol Table Test Start ===\n");
@@ -34,7 +34,8 @@ int main(void) {
         char key[32];
         sprintf(key, "SYM%d", i);
         addSym(table, key, i);
-        if (i % 400 == 0) printf("    -> Inserted %d symbols...\n", i);
+        if (i % 400 == 0)
+            printf("    -> Inserted %d symbols...\n", i);
     }
 
     printf("[6] Checking post-resize integrity...\n");

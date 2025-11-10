@@ -1,9 +1,10 @@
 #include "parser.h"
+#include "bitvector.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-// extern symTable* numericTableChecker;
+extern BitVector* bv;
 
 static void stripWhiteSpace(char* line) {
     int i = 0;
@@ -204,7 +205,7 @@ ParsedPacket* parseAInstruction(symTable* table, const char* line) {
         packet->value = val;
 
         // bit vector collision and resolve logic goes here
-        
+
         return packet;
     } else {
         packet->value = nextFreeRamAddr;

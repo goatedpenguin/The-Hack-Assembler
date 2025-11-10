@@ -1,13 +1,14 @@
 #define _GNU_SOURCE
 #include "assembler.h"
+#include "bitvector.h"
 #include "codegen.h"
 #include "parser.h"
 #include "symbol_table.h"
 #include <stdlib.h>
 #include <string.h>
 
-// extern symTable* numericTableChecker;
 extern FILE* file;
+extern BitVector* bv;
 
 void assemblerFirstPass(symTable* table) {
     loadPredefinedSymbols(table);

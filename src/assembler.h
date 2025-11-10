@@ -6,6 +6,8 @@
 #include "symbol_table.h"
 #include <stdio.h>
 
+extern FILE* file;
+
 void loadPredefinedSymbols(symTable* table);
 void assemblerFirstPass(symTable* table);
 void assemblerSecondPass(const char* programExecutableName, symTable* table);

@@ -20,7 +20,6 @@ void assemblerFirstPass(symTable* table) {
     instrType instr;
 
     while ((read = getline(&line, &len, file)) != -1) {
-        ogLine = strdup(line);
         sanitizeLine(line);
 
         if (line[0] == '\0')
@@ -29,19 +28,17 @@ void assemblerFirstPass(symTable* table) {
         instr = detectInstrType(line);
         switch (instr) {
         case A_INSTR: {
-            if (line[0] >= '0' && line[0] <= '9') {
-                // bit vector insertion logic goes here
-            } else {
-                free(ogLine);
+            if (line[1] >= '0' && line[1] <= '9') {
+                char* strAddr = extractSym(line);
+                int addr = atoi(strAddr);
+                setBit(addr);
             }
             break;
         }
         case C_INSTR:
-            free(ogLine);
             romAddr++;
             break;
         case L_INSTR: {
-            free(ogLine);
             char* sym = extractSym(line);
             addSym(table, sym, romAddr);
             free(sym);
@@ -49,7 +46,6 @@ void assemblerFirstPass(symTable* table) {
         }
         default:
             fprintf(stderr, "Invalid instruction: %s\n", line);
-            free(ogLine);
             free(line);
             exit(EXIT_FAILURE);
             break;
@@ -78,12 +74,12 @@ void assemblerSecondPass(const char* programExecutableName, symTable* table) {
         case A_INSTR:
         case C_INSTR: {
             ParsedPacket* packet = fetchInstrPacket(table, line);
-            outputBin = symToBinStr(packet);
+            outputBin = symToBinStr(instr, packet);
             fprintf(program, "%s\n", outputBin);
             free(packet);
             free(outputBin);
             break;
-        }
+            }
         }
     }
     freeTable(table);

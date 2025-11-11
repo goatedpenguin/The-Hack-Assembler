@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char* symToBinStr(ParsedPacket* packet);
-uint16_t symTOBinB(ParsedPacket* packet);
+char* symToBinStr(instrType instr, ParsedPacket* packet); 
+uint16_t symToBinB(instrType instr, ParsedPacket* packet);  // this is if we truly want to output a bin the above is a textual rep. of the machine code
 
 #endif

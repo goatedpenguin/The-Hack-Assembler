@@ -12,7 +12,7 @@ void initBitVector(size_t numBits) {
     bv->size = bytes;
 }
 
-void setBit(int index) {
+void setBit(size_t index) {
     int byteIdx = index / 8;
     if (index < 0 || index >= bv->numBits)
         return;
@@ -23,7 +23,7 @@ void setBit(int index) {
     // there for learning purposes... Done on the last line
 }
 
-void clearBit(int index) {
+static void clearBit(size_t index) {
     int byteIdx = index / 8;
     int bitPos = index % 8;
     if (index < 0 || index >= bv->numBits)
@@ -34,21 +34,20 @@ void clearBit(int index) {
     bv->data[byteIdx] &= ~(1 << bitPos);
 }
 
-int getBit(int index) {
+static int getBit(size_t index) {
     int byteIdx = index / 8;
     int bitPos = index % 8;
     if (index < 0 || index >= bv->numBits)
         return -1;
-    // shift our target bits to the right by bitPos times, then and it with one
-    // to preserve our target bit
+    // shift our target bits to the right by bitPos times, then AND it with one to preserve our target bit
     return (bv->data[byteIdx] >> bitPos) & 1;
 }
 
-int getNextFreeSlot() {
-    for (int freeBitIndex = 0; freeBitIndex < bv->numBits; freeBitIndex++) {
-        if (!get(freeBitIndex)) return freeBitIndex;
+size_t getNextFreeSlot() {
+    for (size_t freeBitIndex = 0; freeBitIndex < bv->numBits; freeBitIndex++) {
+        if (!getBit(freeBitIndex)) return freeBitIndex;
     }
-    return -1;
+    return (size_t) -1;
 }
 
 void freeBitVector() {

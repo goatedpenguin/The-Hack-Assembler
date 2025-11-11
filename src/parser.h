@@ -7,8 +7,8 @@
 typedef enum { A_INSTR, C_INSTR, L_INSTR } instrType;
 
 typedef struct parsedPacket {
-    uint16_t value;
-    char* symbol;
+    uint16_t value; // numeric val of a instr
+    char* symbol; // for dbg
     char* comp;
     char* dest;
     char* jump;

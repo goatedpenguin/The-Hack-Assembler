@@ -179,14 +179,11 @@ ParsedPacket* parseCInstruction(const char* line) {
 }
 
 ParsedPacket* parseAInstruction(symTable* table, const char* line) {
-    static int nextFreeRamAddr = 16;
-
     // check if it overflows to screen memory region
-    if (nextFreeRamAddr > 16383)
-        return NULL;
+
 
     ParsedPacket* packet = (ParsedPacket*)malloc(sizeof(ParsedPacket));
-    // detect if binded to a label, var, or numeric
+    // detect if a instr is binded to a label, is a var, or a numeric
 
     char* symbol = extractSym(line);
     int retval = getSym(table, symbol);
@@ -197,19 +194,21 @@ ParsedPacket* parseAInstruction(symTable* table, const char* line) {
         return packet;
     }
 
-    // else, check the string to see whether its numeric or a var e.x. "5" vs
+    // else, check the string to see whether its a numeric or a var e.x. "5" vs
     // "i" check numeric first if not, then it must be a var:
 
     if (symbol[0] >= '0' && symbol[0] <= '9') {
         int val = atoi(symbol);
         packet->value = val;
-
-        // bit vector collision and resolve logic goes here
-
         return packet;
-    } else {
-        packet->value = nextFreeRamAddr;
-        nextFreeRamAddr++;
-        return packet;
-    }
+    } 
+
+    // bit vector collision and resolve logic goes here
+    size_t freeRamAddr = getNextFreeSlot() + (size_t) 16;
+    if (freeRamAddr > 16383) return NULL; // to prevent overflow in to screen region memory
+    setBit(freeRamAddr); // mark as used
+    packet->value = freeRamAddr; // hack addr only go up till 24576, way less than 2^16. Typecast from size_t -> uint16_t is safe here 
+    
+    free(symbol);
+    return packet;
 }

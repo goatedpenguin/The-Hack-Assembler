@@ -8,6 +8,7 @@ extern BitVector* bv;
 
 typedef struct {
     unsigned char* data;
+    size_t numBits;
     size_t size;
 } BitVector;
 
@@ -16,6 +17,6 @@ void setBit(int index);
 void clearBit(int index);
 int getBit(int index);
 int getNextFreeSlot();
-void freeVector();
+void freeBitVector();
 
 #endif

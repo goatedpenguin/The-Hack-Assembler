@@ -1,27 +1,36 @@
 #include "codegen.h"
 #include "parser.h"
+#include "symbol_table.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-char* symToBinStr(instrType instr, ParsedPacket* packet) {
-    int binNum = 0;
-    char* strBinBuffer = (char *) malloc(16*sizeof(char));
-    int bitPos = 0;
-    switch (instr) {
-        case A_INSTR: {
-            while (packet->value != 0) {
-                binNum |= (packet->value % 2) << bitPos;
-                packet->value /= 2;
-                bitPos++;
-            }
-            // build the string from msb to lsb
-            return strBinBuffer;
-        }
-        case C_INSTR: {
+static char* decToBinStr(unsigned int dec) {
+    int numBits = 15;                       
+    char* binStr = (char *) malloc(numBits + 1); 
+    int strSize = numBits - 1;              
+    binStr[numBits] = '\0';                 
 
-        }
+    for (int i = strSize; i >= 0; i--) {
+        binStr[i] = (dec & 1) + '0';       
+        dec >>= 1;  // % 2 but faster                        
     }
 
+    return binStr;
+}
 
-    return binaryStr;  
+char* symToBinStr(instrType instr, ParsedPacket* packet) {    
+    char* res;
+    switch (instr) {
+        case A_INSTR: {
+            res = decToBinStr(packet->value);
+            return res;
+        }
+        case C_INSTR: {
+            symTable* table = initTable();
+            // load symbolic as key and its binary equivilent as the value 
+            freeTable(table);
+        }
+    }
+    
+    return NULL;
 }

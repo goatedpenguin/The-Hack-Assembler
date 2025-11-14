@@ -8,7 +8,6 @@
 #include <string.h>
 
 extern FILE* file;
-extern BitVector* bv;
 
 void assemblerFirstPass(symTable* table) {
     loadPredefinedSymbols(table);
@@ -22,8 +21,9 @@ void assemblerFirstPass(symTable* table) {
     while ((read = getline(&line, &len, file)) != -1) {
         sanitizeLine(line);
 
-        if (line[0] == '\0')
+        if (line[0] == '\0') {
             continue;
+        }
 
         instr = detectInstrType(line);
         switch (instr) {
@@ -31,6 +31,7 @@ void assemblerFirstPass(symTable* table) {
             if (line[1] >= '0' && line[1] <= '9') {
                 char* strAddr = extractSym(line);
                 int addr = atoi(strAddr);
+                free(strAddr);
                 setBit(addr);
             }
             break;
@@ -64,11 +65,18 @@ void assemblerSecondPass(const char* programExecutableName, symTable* table) {
 
     size_t bufferSize = strlen(programExecutableName) + strlen(".hack") + 1;
     char* programExecutableNameBuffer = (char*)malloc(bufferSize);
-    sprintf(programExecutableNameBuffer, "%s.hack", programExecutableName);
+    snprintf(programExecutableNameBuffer, bufferSize, "%s.hack", programExecutableName);
     FILE* program = fopen(programExecutableNameBuffer, "w");
+    if (!program) {
+        perror("Failed to open output file");
+        exit(1);  
+    }       
     free(programExecutableNameBuffer);
 
     while ((read = getline(&line, &len, file)) != -1) {
+        sanitizeLine(line);
+        if (line[0] == '\0') continue;
+        
         instr = detectInstrType(line);
         switch (instr) {
         case A_INSTR:
@@ -76,35 +84,35 @@ void assemblerSecondPass(const char* programExecutableName, symTable* table) {
             ParsedPacket* packet = fetchInstrPacket(table, line);
             outputBin = symToBinStr(instr, packet);
             fprintf(program, "%s\n", outputBin);
-            free(packet);
+            freeParsedPacket(packet); 
             free(outputBin);
             break;
             }
         }
     }
-    freeTable(table);
     free(line);
     fclose(program);
 }
 
-void loadPredefinedSymbols(symTable* table) {
+static void loadPredefinedSymbols(symTable* table) {
     char RSym[4];
 
     for (int i = 0; i < 16; i++) {
         sprintf(RSym, "R%d", i);
         addSym(table, strdup(RSym), i);
+        setBit(i);
     }
 
-    addSym(table, "SCREEN", 16384);
-    addSym(table, "KBD", 24576);
-    addSym(table, "SP", 0);
-    addSym(table, "LCL", 1);
-    addSym(table, "ARG", 2);
-    addSym(table, "THIS", 3);
-    addSym(table, "THAT", 4);
+    addSym(table, "SCREEN", 16384); 
+    addSym(table, "KBD", 24576); 
+    addSym(table, "SP", 0); 
+    addSym(table, "LCL", 1); 
+    addSym(table, "ARG", 2); 
+    addSym(table, "THIS", 3); 
+    addSym(table, "THAT", 4); 
 }
 
-ParsedPacket* fetchInstrPacket(symTable* table, const char* line) {
+static ParsedPacket* fetchInstrPacket(symTable* table, const char* line) {
     instrType instr;
     instr = detectInstrType(line);
     ParsedPacket* packet;

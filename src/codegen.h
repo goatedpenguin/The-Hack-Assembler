@@ -5,8 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static char* decToBinStr(unsigned int dec);
+static char* decToBinStr16(uint16_t, int forceLeadingZero);
+static void buildCinstrTable(symTable* comp, symTable* dest, symTable* jump);
 char* symToBinStr(instrType instr, ParsedPacket* packet); 
-uint16_t symToBinB(instrType instr, ParsedPacket* packet);  // this is if we truly want to output a bin the above is a textual rep. of the machine code
+// uint16_t symToBinB(instrType instr, ParsedPacket* packet);  // this is if we truly want to output a bin the above is a textual rep. of the machine code
 
 #endif

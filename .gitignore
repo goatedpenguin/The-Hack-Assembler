@@ -43,3 +43,4 @@ Desktop.ini
 *.json
 .vscode/settings.json
 queue.c
+tests/

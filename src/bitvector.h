@@ -4,13 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern BitVector* bv;
 
 typedef struct {
     unsigned char* data;
     size_t numBits;
     size_t size;
 } BitVector;
+
+extern BitVector* bv;
 
 void initBitVector(size_t numBits);
 void setBit(size_t index);

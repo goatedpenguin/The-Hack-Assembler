@@ -79,7 +79,6 @@ void addSym(symTable* table, const char* name, int address) {
     int idx = hash(name) % table->capacity;
 
     entry* temp = (entry*)malloc(sizeof(entry));
-
     temp->address = address;
     temp->name = strdup(name);
     temp->next = table->entries[idx];
@@ -88,6 +87,7 @@ void addSym(symTable* table, const char* name, int address) {
 }
 
 int getSym(symTable* table, const char* name) {
+    if (!table || !name) return -1;
     int idx = hash(name) % table->capacity;
     entry* temp = table->entries[idx];
 

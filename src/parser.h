@@ -3,6 +3,7 @@
 #include "symbol_table.h"
 #include <stdint.h>
 #include <stdio.h>
+#include <ctype.h>
 
 typedef enum { A_INSTR, C_INSTR, L_INSTR } instrType;
 
@@ -14,18 +15,17 @@ typedef struct parsedPacket {
     char* jump;
 } ParsedPacket;
 
-static void stripComments(char* line);
-static void stripWhiteSpace(char* line);
 void sanitizeLine(char* line);
 
-static instrType detectInstrType(const char* line);
+instrType detectInstrType(const char* line);
 
-static char* extractSym(const char* line);
-static char* extractDest(const char* line);
-static char* extractComp(const char* line);
-static char* extractJump(const char* line);
+char* extractSym(const char* line);
+char* extractDest(const char* line);
+char* extractComp(const char* line);
+char* extractJump(const char* line);
 
 ParsedPacket* parseCInstruction(const char* line);
 ParsedPacket* parseAInstruction(symTable* table, const char* line);
+void freeParsedPacket(ParsedPacket* packet);
 
 #endif

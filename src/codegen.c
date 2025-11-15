@@ -23,56 +23,56 @@ static char* decToBinStr16(uint16_t dec, int forceLeadingZero) {
 
 static void buildCinstrTable(symTable* comp, symTable* dest, symTable* jump) {
     // COMP field (7 bits: a c1..c6)
-    addSym(comp, "0",     0b0101010);
-    addSym(comp, "1",     0b0111111);
-    addSym(comp, "-1",    0b0111010);
-    addSym(comp, "D",     0b0001100);
-    addSym(comp, "A",     0b0110000);
-    addSym(comp, "!D",    0b0001101);
-    addSym(comp, "!A",    0b0110001);
-    addSym(comp, "-D",    0b0001111);
-    addSym(comp, "-A",    0b0110011);
-    addSym(comp, "D+1",   0b0011111);
-    addSym(comp, "A+1",   0b0110111);
-    addSym(comp, "D-1",   0b0001110);
-    addSym(comp, "A-1",   0b0110010);
-    addSym(comp, "D+A",   0b0000010);
-    addSym(comp, "D-A",   0b0010011);
-    addSym(comp, "A-D",   0b0000111);
-    addSym(comp, "D&A",   0b0000000);
-    addSym(comp, "D|A",   0b0010101);
+    addSym(&comp, "0",     0b0101010);
+    addSym(&comp, "1",     0b0111111);
+    addSym(&comp, "-1",    0b0111010);
+    addSym(&comp, "D",     0b0001100);
+    addSym(&comp, "A",     0b0110000);
+    addSym(&comp, "!D",    0b0001101);
+    addSym(&comp, "!A",    0b0110001);
+    addSym(&comp, "-D",    0b0001111);
+    addSym(&comp, "-A",    0b0110011);
+    addSym(&comp, "D+1",   0b0011111);
+    addSym(&comp, "A+1",   0b0110111);
+    addSym(&comp, "D-1",   0b0001110);
+    addSym(&comp, "A-1",   0b0110010);
+    addSym(&comp, "D+A",   0b0000010);
+    addSym(&comp, "D-A",   0b0010011);
+    addSym(&comp, "A-D",   0b0000111);
+    addSym(&comp, "D&A",   0b0000000);
+    addSym(&comp, "D|A",   0b0010101);
 
     // 'a' bit = 1 (use M instead of A)
-    addSym(comp, "M",     0b1110000);
-    addSym(comp, "!M",    0b1110001);
-    addSym(comp, "-M",    0b1110011);
-    addSym(comp, "M+1",   0b1110111);
-    addSym(comp, "M-1",   0b1110010);
-    addSym(comp, "D+M",   0b1000010);
-    addSym(comp, "D-M",   0b1010011);
-    addSym(comp, "M-D",   0b1000111);
-    addSym(comp, "D&M",   0b1000000);
-    addSym(comp, "D|M",   0b1010101);
+    addSym(&comp, "M",     0b1110000);
+    addSym(&comp, "!M",    0b1110001);
+    addSym(&comp, "-M",    0b1110011);
+    addSym(&comp, "M+1",   0b1110111);
+    addSym(&comp, "M-1",   0b1110010);
+    addSym(&comp, "D+M",   0b1000010);
+    addSym(&comp, "D-M",   0b1010011);
+    addSym(&comp, "M-D",   0b1000111);
+    addSym(&comp, "D&M",   0b1000000);
+    addSym(&comp, "D|M",   0b1010101);
 
     // DEST field (3 bits)
-    addSym(dest, "null",  0b000);
-    addSym(dest, "M",     0b001);
-    addSym(dest, "D",     0b010);
-    addSym(dest, "MD",    0b011);
-    addSym(dest, "A",     0b100);
-    addSym(dest, "AM",    0b101);
-    addSym(dest, "AD",    0b110);
-    addSym(dest, "AMD",   0b111);
+    addSym(&dest, "null",  0b000);
+    addSym(&dest, "M",     0b001);
+    addSym(&dest, "D",     0b010);
+    addSym(&dest, "MD",    0b011);
+    addSym(&dest, "A",     0b100);
+    addSym(&dest, "AM",    0b101);
+    addSym(&dest, "AD",    0b110);
+    addSym(&dest, "AMD",   0b111);
 
     // JUMP field (3 bits)
-    addSym(jump, "null",  0b000);
-    addSym(jump, "JGT",   0b001);
-    addSym(jump, "JEQ",   0b010);
-    addSym(jump, "JGE",   0b011);
-    addSym(jump, "JLT",   0b100);
-    addSym(jump, "JNE",   0b101);
-    addSym(jump, "JLE",   0b110);
-    addSym(jump, "JMP",   0b111);
+    addSym(&jump, "null",  0b000);
+    addSym(&jump, "JGT",   0b001);
+    addSym(&jump, "JEQ",   0b010);
+    addSym(&jump, "JGE",   0b011);
+    addSym(&jump, "JLT",   0b100);
+    addSym(&jump, "JNE",   0b101);
+    addSym(&jump, "JLE",   0b110);
+    addSym(&jump, "JMP",   0b111);
 }
 
 char* symToBinStr(instrType instr, ParsedPacket* packet) {    

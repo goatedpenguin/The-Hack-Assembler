@@ -4,16 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define INIT_TABLE_SIZE 512
-
-// MAKE IT A POWER OF 2!!!
+#define INIT_TABLE_SIZE 512 // power of 2 for better perf
 
 symTable* initTable(void) {
     symTable* emptyTable = (symTable*)malloc(sizeof(symTable));
     emptyTable->capacity = INIT_TABLE_SIZE;
     emptyTable->size = 0;
-    emptyTable->entries =
-        (entry**)malloc(emptyTable->capacity * sizeof(entry*));
+    emptyTable->entries = (entry**)malloc(emptyTable->capacity * sizeof(entry*));
 
     for (int i = 0; i < emptyTable->capacity; i++) {
         emptyTable->entries[i] = NULL;
@@ -47,43 +44,44 @@ unsigned long hash(const char* str) {
     return hash;
 }
 
-void resize(symTable* table) {
-    int newIdx;
-    int oldCapacity = table->capacity;
+static symTable* resize(symTable* table) {
     entry* temp;
-    entry* next;
-    if (table->size * 3 >= 2 * table->capacity) {
-        table->entries = (entry**)realloc(
-            table->entries, table->capacity * 2 * sizeof(entry*));
-        table->capacity = (int)table->capacity * 2;
+    int newIdx;
 
-        for (int i = oldCapacity; i < table->capacity; i++) {
-            table->entries[i] = NULL;
-        }
+    if (table->size * 3 < 2 * table->capacity) return table;
+ 
+    symTable* newTable = (symTable *) malloc(sizeof(symTable));
+    newTable->capacity = table->capacity * 2;
+    newTable->size = 0;
+    newTable->entries = (entry **) calloc(newTable->capacity, sizeof(entry *));
 
-        for (int i = 0; i < oldCapacity; i++) {
-            temp = table->entries[i];
-            while (temp != NULL) {
-                newIdx = hash(temp->name) % table->capacity;
-                next = temp->next;
-                temp->next = table->entries[newIdx];
-                table->entries[newIdx] = temp;
-                temp = next;
-            }
+    for (int i = 0; i < table->capacity; i++) {
+        temp = table->entries[i];
+        while (temp != NULL) {
+            entry* next = temp->next;   
+            newIdx = hash(temp->name) % newTable->capacity;
+            temp->next = newTable->entries[newIdx];
+            newTable->entries[newIdx] = temp;
+            temp = next;
+            newTable->size++;
         }
     }
+    // free only the old array and struct, not the nodes
+    free(table->entries);
+    free(table);
+    return newTable;    
 }
 
-void addSym(symTable* table, const char* name, int address) {
-    resize(table);
-    int idx = hash(name) % table->capacity;
-
+void addSym(symTable** table, const char* name, int address) {
+    
+    *table = resize(*table);
+    int idx = hash(name) % (*table)->capacity;
     entry* temp = (entry*)malloc(sizeof(entry));
     temp->address = address;
     temp->name = strdup(name);
-    temp->next = table->entries[idx];
-    table->entries[idx] = temp;
-    table->size++;
+    temp->next = (*table)->entries[idx];
+    (*table)->entries[idx] = temp;
+    ((*table)->size++);
 }
 
 int getSym(symTable* table, const char* name) {

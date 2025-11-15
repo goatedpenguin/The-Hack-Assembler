@@ -23,16 +23,17 @@ void setBit(size_t index) {
     // there for learning purposes... Done on the last line
 }
 
-static void clearBit(size_t index) {
-    if (index >= bv->numBits)
-        return;
-    size_t byteIdx = index / 8;
-    size_t bitPos = index % 8;
-    // set to all 0s except one 1 in the mask, shift bitPos times and then
-    // negate everything such that everything is 0xff except the 1 we shifted at
-    // first
-    bv->data[byteIdx] &= ~((unsigned char)1u << bitPos);
-}
+// static void clearBit(size_t index) {
+// function not needed but implemeneted just to learn
+//     if (index >= bv->numBits)
+//         return;
+//     size_t byteIdx = index / 8;
+//     size_t bitPos = index % 8;
+//     // set to all 0s except one 1 in the mask, shift bitPos times and then
+//     // negate everything such that everything is 0xff except the 1 we shifted at
+//     // first
+//     bv->data[byteIdx] &= ~((unsigned char)1u << bitPos);
+// }
 
 static int getBit(size_t index) {
     if (index >= bv->numBits)

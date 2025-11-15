@@ -16,7 +16,7 @@ FILE* file = NULL;
 int main (int argc, char **argv) { 
     initBitVector((size_t) 65536);
     if (argc < 2) {
-        fprintf(stderr, "\nUsage: %s <file.asm>", argv[0]);
+        fprintf(stderr, "\nUsage: %s <file.asm>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
@@ -32,7 +32,7 @@ int main (int argc, char **argv) {
     if (dot) *dot = '\0';
 
     symTable* table = initTable();
-    assemblerFirstPass(table);
+    assemblerFirstPass(&table);
     assemblerSecondPass(programExecNameBuffer, table);
 
     freeBitVector();

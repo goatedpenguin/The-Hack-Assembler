@@ -29,8 +29,6 @@ void sanitizeLine(char* line) {
 }
 
 instrType detectInstrType(const char* line) {
-    instrType type;
-
     if (line[0] == '@') {
         return A_INSTR;
     }

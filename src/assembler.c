@@ -9,10 +9,48 @@
 
 extern FILE* file;
 
-void assemblerFirstPass(symTable* table) {
+static void loadPredefinedSymbols(symTable** table) {
+    char RSym[4];
+
+    for (int i = 0; i < 16; i++) {
+        sprintf(RSym, "R%d", i);
+        addSym(table, strdup(RSym), i);
+        setBit(i);
+    }
+
+    addSym(table, "SCREEN", 16384); 
+    addSym(table, "KBD", 24576); 
+    addSym(table, "SP", 0); 
+    addSym(table, "LCL", 1); 
+    addSym(table, "ARG", 2); 
+    addSym(table, "THIS", 3); 
+    addSym(table, "THAT", 4); 
+}
+
+static ParsedPacket* fetchInstrPacket(symTable* table, const char* line) {
+    instrType instr;
+    instr = detectInstrType(line);
+    ParsedPacket* packet;
+
+    switch (instr) {
+    case A_INSTR: {
+        packet = parseAInstruction(table, line);
+        return packet;
+    }
+
+    case C_INSTR: {
+        packet = parseCInstruction(line);
+        return packet;
+    }
+    case L_INSTR:
+        return NULL;
+    }
+    return NULL;
+}
+
+void assemblerFirstPass(symTable** table) {
     loadPredefinedSymbols(table);
     char* line = NULL;
-    char* ogLine;
     ssize_t read = 0;
     size_t len = 0;
     int romAddr = 0;
@@ -95,39 +133,3 @@ void assemblerSecondPass(const char* programExecutableName, symTable* table) {
     fclose(program);
 }
 
-static void loadPredefinedSymbols(symTable* table) {
-    char RSym[4];
-
-    for (int i = 0; i < 16; i++) {
-        sprintf(RSym, "R%d", i);
-        addSym(table, strdup(RSym), i);
-        setBit(i);
-    }
-
-    addSym(table, "SCREEN", 16384); 
-    addSym(table, "KBD", 24576); 
-    addSym(table, "SP", 0); 
-    addSym(table, "LCL", 1); 
-    addSym(table, "ARG", 2); 
-    addSym(table, "THIS", 3); 
-    addSym(table, "THAT", 4); 
-}
-
-static ParsedPacket* fetchInstrPacket(symTable* table, const char* line) {
-    instrType instr;
-    instr = detectInstrType(line);
-    ParsedPacket* packet;
-
-    switch (instr) {
-    case A_INSTR: {
-        packet = parseAInstruction(table, line);
-        return packet;
-    }
-
-    case C_INSTR: {
-        packet = parseCInstruction(line);
-        return packet;
-    }
-    }
-    return NULL;
-}

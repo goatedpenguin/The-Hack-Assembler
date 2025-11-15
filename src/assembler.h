@@ -8,7 +8,7 @@
 
 extern FILE* file;
 
-void assemblerFirstPass(symTable* table);
+void assemblerFirstPass(symTable** table);
 void assemblerSecondPass(const char* programExecutableName, symTable* table);
 
 /*
@@ -28,7 +28,5 @@ If not, assign it the next available RAM address (starting at 16) and store it.
 
 Fills out the ParsedPacket.
 */
-static ParsedPacket* fetchInstrPacket(symTable* table, const char* line);
-static void loadPredefinedSymbols(symTable* table);
 
 #endif

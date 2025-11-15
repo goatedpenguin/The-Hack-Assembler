@@ -33,6 +33,7 @@ void assemblerFirstPass(symTable* table) {
                 int addr = atoi(strAddr);
                 free(strAddr);
                 setBit(addr);
+                romAddr++;
             }
             break;
         }

@@ -180,6 +180,7 @@ ParsedPacket* parseCInstruction(const char* line) {
 
     return packet;
 }
+
 ParsedPacket* parseAInstruction(symTable* table, const char* line) {
     // detect if a instr is binded to a label, is a var, or a numeric
 

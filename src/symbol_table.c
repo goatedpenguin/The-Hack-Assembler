@@ -73,7 +73,6 @@ static symTable* resize(symTable* table) {
 }
 
 void addSym(symTable** table, const char* name, int address) {
-    
     *table = resize(*table);
     int idx = hash(name) % (*table)->capacity;
     entry* temp = (entry*)malloc(sizeof(entry));
